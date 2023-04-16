@@ -1,5 +1,5 @@
 import time
-from pages.elements_page import *
+from demoqa.pages.elements_page import *
 
 
 class TestElements:
