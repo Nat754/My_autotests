@@ -1,3 +1,5 @@
+import random
+
 from faker import Faker
 from demoqa.data.data import Person
 
@@ -10,23 +12,10 @@ def get_person():
         full_name=faker_ru.first_name() + ' ' + faker_ru.last_name(),
         email=faker_ru.email(),
         current_address=faker_ru.address(),
-        permanent_address=faker_ru.address()
+        permanent_address=faker_ru.address(),
+        first_name=faker_ru.first_name(),
+        last_name=faker_ru.last_name(),
+        age=random.randint(1, 100),
+        department=faker_ru.job(),
+        salary=random.randint(100, 1000000)
     )
-
-
-
-
-# from faker.providers import internet
-#
-# fake = Faker()
-# fake.add_provider(internet)
-# faker_ru = Faker('ru_RU')
-#
-#
-# print(fake.name())
-# print(fake.address())
-# print(faker_ru.name())
-# print(faker_ru.address())
-# print(fake.text())
-# print(faker_ru.text())
-# print(fake.ipv4_private())
