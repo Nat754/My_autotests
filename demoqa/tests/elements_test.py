@@ -1,7 +1,7 @@
 import random
 import time
 import allure
-from demoqa.pages.elements_page import *
+from pages.elements_page import *
 
 
 @allure.suite("Main Test")

@@ -1,7 +1,7 @@
 from faker.generator import random
-from demoqa.pages.base_page import BasePage
-from demoqa.locators.elements_page_locators import *
-from demoqa.generator.generator import *
+from pages.base_page import BasePage
+from locators.elements_page_locators import *
+from generator.generator import *
 import allure
 
 
