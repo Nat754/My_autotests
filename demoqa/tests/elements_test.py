@@ -42,22 +42,20 @@ class TestElements:
         def test_radio_button(self, driver):
             radio_button_page = RadioButtonPage(driver, "https://demoqa.com/radio-button")
             radio_button_page.open()
-            with allure.step("check click on the buttons"):
-                radio_buttons_list = ['yes', 'impressive', 'no']
-                # random.shuffle(radio_buttons_list)
-                # for i in radio_buttons_list:
-                #     radio_button = radio_button_page.click_on_the_radio_button(i)
-                #     output = radio_button_page.get_output_result
-                #     print(output)
-                radio_button_page.click_on_the_radio_button('yes')
+            radio_buttons_list = ['yes', 'impressive', 'no']
+            i = random.choice(radio_buttons_list)
+            print(i)
+            radio_button_page.click_on_the_radio_button(i)
+            if radio_button_page.click_on_the_radio_button('yes'):
                 output_yes = radio_button_page.get_output_result()
-                radio_button_page.click_on_the_radio_button('impressive')
+                assert output_yes == "Yes", "Yes radiobutton is not clickable"
+            if radio_button_page.click_on_the_radio_button('impressive'):
                 output_impressive = radio_button_page.get_output_result()
-                radio_button_page.click_on_the_radio_button('no')
+                assert output_impressive == "Impressive", "Impressive radiobutton is not clickable"
+            if radio_button_page.click_on_the_radio_button('no'):
                 output_no = radio_button_page.get_output_result()
-            assert output_yes == "Yes", "Yes radiobutton is not clickable"
-            assert output_impressive == "Impressive", "Impressive radiobutton is not clickable"
-            assert output_no == "No", "No radiobutton is not clickable"
+                assert output_no == "No", "No radiobutton is not clickable"
+
 
     @allure.feature("Check webtable")
     class TestWebTable:
@@ -65,10 +63,11 @@ class TestElements:
         def test_add_person_in_the_table(self, driver):
             web_table_page = WebTablePage(driver, "https://demoqa.com/webtables")
             web_table_page.open()
-            # count = random.randint(1, 100)
-            new_person = web_table_page.add_new_person()
-            result = web_table_page.check_new_added_person()
-            assert new_person in result
+            count = random.randint(1, 10)
+            for i in range(count):
+                new_person = web_table_page.add_new_person()
+                result = web_table_page.check_new_added_person()
+                assert new_person in result
 
         @allure.title("check people in the table")
         def test_check_people_in_the_table(self, driver):
