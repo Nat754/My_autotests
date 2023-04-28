@@ -1,8 +1,16 @@
+import time
+
 from faker.generator import random
+from selenium.common import TimeoutException
+
 from pages.base_page import BasePage
 from locators.elements_page_locators import *
 from generator.generator import *
 import allure
+import requests
+import base64
+import os
+import random
 
 
 class TextBoxPage(BasePage):
@@ -69,6 +77,7 @@ class CheckBoxPage(BasePage):
             lst.append(i.text)
         return str(lst).replace(' ', '').lower()
 
+
 class RadioButtonPage(BasePage):
     locators = RadioButtonPageLocators()
 
@@ -84,6 +93,7 @@ class RadioButtonPage(BasePage):
     @allure.title("check get output result")
     def get_output_result(self):
         return self.element_is_present(self.locators.OUTPUT_RESULT).text
+
 
 class WebTablePage(BasePage):
     locators = WebTablePageLocators()
@@ -132,9 +142,10 @@ class WebTablePage(BasePage):
         info = next(get_person())
         age = info.age
         self.element_is_visible(self.locators.UPDATE_BUTTON).click()
-        self.element_is_visible(self.locators.AGE_INPUT).click()
+        self.element_is_visible(self.locators.AGE_INPUT).clear()
         self.element_is_visible(self.locators.AGE_INPUT).send_keys(age)
         self.element_is_visible(self.locators.SUBMIT).click()
+        return str(age)
 
     @allure.title("delete person")
     def delete_person(self):
@@ -153,9 +164,180 @@ class WebTablePage(BasePage):
             count_row_button = self.element_is_present(self.locators.COUNT_ROW_LIST)
             self.go_to_element(count_row_button)
             count_row_button.click()
-            self.element_is_visible((By.CSS_SELECTOR, f"""option[value="{i}"]""")).click()
+            time.sleep(4)
+            self.element_is_visible(By.CSS_SELECTOR, f'option[value="{i}"]').click()
+            time.sleep(4)
+            data.append(self.check_count_rows())
+            time.sleep(4)
+        return data
 
     @allure.title("Check count rows")
     def check_count_rows(self):
         list_row = self.elements_are_present(self.locators.FULL_PEOPLE_LIST)
         return len(list_row)
+
+
+class ButtonsPage(BasePage):
+    locators = ButtonsPageLocators
+
+    @allure.step('click on different  buttons')
+    def click_on_different_button(self, type_click):
+        if type_click == "double":
+            on_element = self.element_is_visible(self.locators.DOUBLE_CLICK)
+            self.action_double_click(on_element)
+            return self.check_clicked_on_the_button(self.locators.SUCCESS_DOUBLE)
+        if type_click == "right":
+            on_element = self.element_is_visible(self.locators.RIGHT_CLICK)
+            self.action_right_click(on_element)
+            return self.check_clicked_on_the_button(self.locators.SUCCESS_RIGHT)
+        if type_click == "click":
+            self.element_is_visible(self.locators.CLICK_ME_BUTTON).click()
+            return self.check_clicked_on_the_button(self.locators.SUCCESS_CLICK_ME)
+
+    @allure.step('check clicked button')
+    def check_clicked_on_the_button(self, elem):
+        return self.element_is_present(elem).text
+
+
+class LinksPage(BasePage):
+    locators = LinkPageLocators
+
+    @property
+    @allure.step('click on simple link')
+    def click_on_simple_link(self):
+        simple_link = self.element_is_visible(self.locators.SIMPLE_LINK)
+        link_href = simple_link.get_attribute('href')
+        response = requests.get(link_href)
+        if response.status_code == 200:
+            simple_link.click()
+            self.driver.switch_to.window(self.driver.window_handles[1])
+            url = self.driver.current_url
+            return link_href, url
+        else:
+            return response.status_code
+
+    @allure.step('click on the broken link')
+    def click_on_the_broken_link(self, url):
+        response = requests.get(url)
+        if response.status_code == 200:
+            self.element_is_present(self.locators.BAD_REQUEST_LINK).click()
+        else:
+            return response.status_code
+
+    @allure.step('click on dynamic link')
+    def click_on_dynamic_link(self):
+        dynamic_link = self.element_is_visible(self.locators.DYNAMIC_LINK)
+        link_href = dynamic_link.get_attribute('href')
+        response = requests.get(link_href)
+        if response.status_code == 200:
+            dynamic_link.click()
+            self.driver.switch_to.window(self.driver.window_handles[1])
+            url = self.driver.current_url
+            return link_href, url
+        else:
+            return response.status_code
+
+    @allure.step('click on created link')
+    def click_on_created_link(self, url):
+        response = requests.get(url)
+        if response.status_code == 200:
+            self.element_is_present(self.locators.CREATED_LINK).click()
+        else:
+            return response.status_code
+
+    @allure.step('click on no_content link')
+    def click_on_no_content_link(self, url):
+        response = requests.get(url)
+        if response.status_code == 200:
+            self.element_is_present(self.locators.NO_CONTENT_LINK).click()
+        else:
+            return response.status_code
+
+    @allure.step('click on moved link')
+    def click_on_moved_link(self, url):
+        response = requests.get(url)
+        if response.status_code == 200:
+            self.element_is_present(self.locators.MOVED_LINK).click()
+        else:
+            return response.status_code
+
+    @allure.step('click on unauthorized link')
+    def click_on_unauthorized_link(self, url):
+        response = requests.get(url)
+        if response.status_code == 200:
+            self.element_is_present(self.locators.UNAUTHORIZED_LINK).click()
+        else:
+            return response.status_code
+
+    @allure.step('click on forbidden link')
+    def click_on_forbidden_link(self, url):
+        response = requests.get(url)
+        if response.status_code == 200:
+            self.element_is_present(self.locators.FORBIDDEN_LINK).click()
+        else:
+            return response.status_code
+
+    @allure.step('click on not_found link')
+    def click_on_not_found_link(self, url):
+        response = requests.get(url)
+        if response.status_code == 200:
+            self.element_is_present(self.locators.NOT_FOUND_LINK).click()
+        else:
+            return response.status_code
+
+
+class DownloadPage(BasePage):
+    locators = DownLoadPageLocators
+
+    def download_file(self):
+        link = self.element_is_present(self.locators.DOWNLOAD_FILE).get_attribute('href')
+        link_b = base64.b64decode(link)
+        path_name_file = rf"C:\test\MyAutotest\test{random.randint(0, 999)}.jpg"
+        with open(path_name_file, 'wb+') as f:
+            offset = link_b.find(b'\xff\xd8')
+            f.write(link_b[offset:])
+            check_file = os.path.exists(path_name_file)
+            f.close()
+        os.remove(path_name_file)
+        return check_file
+
+
+class UploadPage(BasePage):
+    locators = UploadPageLocators
+
+    @allure.step('upload file')
+    def upload_file(self):
+        file_name, path = generated_file()
+        self.element_is_present(self.locators.UPLOAD_FILE).send_keys(path)
+        os.remove(path)
+        text = self.element_is_present(self.locators.UPLOADED_FILE).text
+        return file_name.split("\\")[-1], text.split("\\")[-1]
+
+
+class DynamicPage(BasePage):
+    locators = DynamicPropertiesPageLocators
+
+    @allure.step("check enable button")
+    def check_enable_button(self):
+        try:
+            enable_button = self.element_is_clickable(self.locators.ENABLE_AFTER_FIVE_SECOND, 5)
+        except TimeoutException:
+            return False
+        return True
+
+    @allure.step("check changed of color")
+    def check_changed_of_color(self):
+        color_button = self.element_is_present(self.locators.COLOR_CHANGE_BUTTON)
+        color_button_before = color_button.value_of_css_property("color")
+        time.sleep(6)
+        color_button_after = color_button.value_of_css_property("color")
+        return color_button_before, color_button_after
+
+    @allure.step("check appear button")
+    def check_appear_button(self):
+        try:
+            self.element_is_visible(self.locators.VISIBLE_AFTER_FIVE_SECOND)
+        except TimeoutException:
+            return "Timeout"
+        return True
+
