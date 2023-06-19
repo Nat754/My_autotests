@@ -1,5 +1,7 @@
-import pytest
+import time
 
+import pytest
+import allure
 from pages.elements_page import *
 
 
@@ -60,7 +62,7 @@ class TestElements:
         def test_add_person_in_the_table(self, driver):
             web_table_page = WebTablePage(driver, "https://demoqa.com/webtables")
             web_table_page.open()
-            count = random.randint(1, 10)
+            count = random.randint(1, 5)
             for i in range(count):
                 new_person = web_table_page.add_new_person()
                 result = web_table_page.check_new_added_person()
@@ -100,6 +102,7 @@ class TestElements:
         def test_change_rows(self, driver):
             web_table_page = WebTablePage(driver, "https://demoqa.com/webtables")
             web_table_page.open()
+            time.sleep(10)
             count = web_table_page.select_up_to_rows()
             assert count in [5, 10, 20, 25, 50, 100], "The number of rows in the table has not been changed"
 

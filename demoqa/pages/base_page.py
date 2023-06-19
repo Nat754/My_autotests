@@ -1,3 +1,4 @@
+from selenium.webdriver.common.by import By
 import allure
 from selenium.webdriver.support.ui import WebDriverWait as wait
 from selenium.webdriver.support import expected_conditions as EC
@@ -56,3 +57,26 @@ class BasePage:
         action = ActionChains(self.driver)
         action.context_click(elem)
         action.perform()
+
+    @allure.step('Drag and drop by offset')
+    def action_drag_and_drop_by_offset(self, elem, x_coord, y_coord):
+        action = ActionChains(self.driver)
+        action.drag_and_drop_by_offset(elem, x_coord, y_coord)
+        action.perform()
+
+    @allure.step('Drag and drop element to element')
+    def action_drag_and_drop_to_element(self, what, where):
+        action = ActionChains(self.driver)
+        action.drag_and_drop(what, where)
+        action.perform()
+
+    @allure.step('Move cursor to element')
+    def action_move_to_element(self, element):
+        action = ActionChains(self.driver)
+        action.move_to_element(element)
+        action.perform()
+
+    @allure.step('Remove footer v2')
+    def remove_footer_v2(self):
+        a = self.driver.find_element(By.TAG_NAME, 'footer')
+        self.driver.execute_script("arguments[0].style.display = 'none'", a)

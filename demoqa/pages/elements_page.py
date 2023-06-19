@@ -1,11 +1,9 @@
-import time
-
 from faker.generator import random
 from selenium.common import TimeoutException
-
 from pages.base_page import BasePage
 from locators.elements_page_locators import *
 from generator.generator import *
+import time
 import allure
 import requests
 import base64
@@ -89,6 +87,7 @@ class RadioButtonPage(BasePage):
             'no': self.locators.NO_BUTTON
         }
         click_button = self.element_is_visible(choices[choice]).click()
+        return click_button
 
     @allure.title("check get output result")
     def get_output_result(self):
@@ -164,11 +163,9 @@ class WebTablePage(BasePage):
             count_row_button = self.element_is_present(self.locators.COUNT_ROW_LIST)
             self.go_to_element(count_row_button)
             count_row_button.click()
-            time.sleep(4)
             self.element_is_visible(By.CSS_SELECTOR, f'option[value="{i}"]').click()
-            time.sleep(4)
+            time.sleep(10)
             data.append(self.check_count_rows())
-            time.sleep(4)
         return data
 
     @allure.title("Check count rows")
@@ -193,6 +190,7 @@ class ButtonsPage(BasePage):
         if type_click == "click":
             self.element_is_visible(self.locators.CLICK_ME_BUTTON).click()
             return self.check_clicked_on_the_button(self.locators.SUCCESS_CLICK_ME)
+
 
     @allure.step('check clicked button')
     def check_clicked_on_the_button(self, elem):
@@ -340,4 +338,3 @@ class DynamicPage(BasePage):
         except TimeoutException:
             return "Timeout"
         return True
-
